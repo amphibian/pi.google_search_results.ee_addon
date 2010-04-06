@@ -1,12 +1,10 @@
-This plugins leverages the [Google AJAX Search API](http://code.google.com/apis/ajaxsearch/) to retreive search results for your site (or from your [Google Custom Search Engine](http://www.google.com/cse/)) and display them using good ole' EE templates.
+The **Google Search Results** plugin (named by a brilliant wordsmith) leverages the [Google AJAX Search API](http://code.google.com/apis/ajaxsearch/) to retreive search results for your site (or via your [Google Custom Search Engine](http://www.google.com/cse/)) and display them using good ole' EE templates.
 
-*NOTE:* Currently the Google AJAX Search API limits queries to 8 results per page, with a total of 64 results for any given query.
+**NOTE:** Currently the Google AJAX Search API limits queries to 8 results per page, with a total of 64 results for any given query.
 
 ##Usage
 
 Simply create a search form with a text input named 'q' and submit it via POST or GET to a template on your site containing the Google Search Results tag pair.
-
------------------------
 
 #Parameters
 
@@ -20,8 +18,6 @@ Simply create a search form with a text input named 'q' and submit it via POST o
 - `remove_title=" | Your Site Name"` -- text string to remove from the title of your search results (e.g. the name of your site, preceeded or appended by a pipe or colon).
 - `safe="off"` -- level of safe search filtering ("high", "moderate", or "off" (default)). (Yes, I am a sick, perverted bastard.)
 - `site="yoursite.com"` -- domain to restrict searches to. (Leave out to get generalized Google search results.)
-
-----------------------
 
 ##Variables
 
@@ -43,8 +39,6 @@ Outside the `{results}` tag pair you may use the following tags:
 - `{total_pages}` -- total number of pages of results for your query
 - `{google_results_url}` -- URL to your search on Google
 
----------------------
-
 ##Conditionals
 
 - `{if paginate}` -- TRUE if there is more than one page of results returned
@@ -53,27 +47,22 @@ Outside the `{results}` tag pair you may use the following tags:
 - `{if results_overflow}` -- TRUE if the total number of available results via Google exceeds the API's limt of 64
 - `{if last_results_page}` -- TRUE if you're on the last page of your search results
 
--------------------
-
 ##Keywords
 
 You can also display the search keywords outside of the `{exp:google_search_results}` tag pair using `{exp:google_search_results:keywords}`.
-
----------------------
 
 ##Example template
 
 	{exp:google_search_results site="yoursite.com"}
 		
 		{if search_results}
-			<p>You searched for <strong>{keywords}</strong> and got {total_search_results} {if total_search_results == "1"}result{if:else}results{/if}.</p>
+			<p>You searched for <strong>{keywords}</strong> and got 
+			{total_search_results} {if total_search_results == "1"}result{if:else}results{/if}.</p>
 		{/if}
 			
 		{results}
 		
-			{if count == "1"}
-				<ul>
-			{/if}
+			{if count == "1"}<ul>{/if}
 			
 			<li>
 				<h3><a href="{url}">{title}</a></h3>
@@ -81,9 +70,7 @@ You can also display the search keywords outside of the `{exp:google_search_resu
 				<p><small>{url} <a href="{cached_url}">(cached)</a></small></p>
 			</li>
 			
-			{if count == total_page_results}
-				</ul>
-			{/if}
+			{if count == total_page_results}</ul>{/if}
 			
 		{/results}
 			
@@ -96,12 +83,10 @@ You can also display the search keywords outside of the `{exp:google_search_resu
 		{/if}
 		
 		{if last_results_page && results_overflow}
-		<p><a href="{google_results_url}">View all {total_google_search_results} results on Google</a></p>
+			<p><a href="{google_results_url}">View all {total_google_search_results} results on Google</a></p>
 		{/if}
 		
 	{/exp:google_search_results}
-
------------------------
 
 ##Compatibility
 
