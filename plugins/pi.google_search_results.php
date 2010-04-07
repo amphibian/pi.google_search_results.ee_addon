@@ -35,7 +35,7 @@ class Google_search_results
 	function Google_search_results()
 	{
 		global $FNS, $IN, $OUT, $TMPL;
-				
+						
 		// Fetch search terms from GET or POST
 		$terms = ($IN->GBL('q')) ? $IN->GBL('q') : FALSE;
 			
@@ -253,11 +253,11 @@ class Google_search_results
 		
 		if($TMPL->fetch_param('remove_query_indicator') == 'y')
 		{
-			return preg_replace('//&[.]*$/', '', $IN->URI) . '&amp;';
+			return preg_replace('/&[.]*$/', '', $IN->URI) . '&amp;';
 		}
 		else
 		{
-			return preg_replace('//\?[.]*$/', '', $IN->URI) . '?';
+			return preg_replace('/\?[.]*$/', '', $IN->URI) . '?';
 		}	
 	}
 	
