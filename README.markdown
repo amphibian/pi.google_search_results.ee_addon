@@ -26,6 +26,7 @@ Simply create a search form with a text input named 'q' and submit it via POST o
 - `{title}` -- the page title of the search result
 - `{url}` -- the URL of the search result
 - `{excerpt}` -- Google's excerpt from the search result, with keywords emphasized
+- `{excerpt_plain}` -- Google's excerpt from the search result, *without* keywords emphasized
 - `{cached_url}` --  link to Google's cached copy of the search result
 
 You can also use both `{count}` and `{total_page_results}` tags within the loop, as variables or conditionals.
