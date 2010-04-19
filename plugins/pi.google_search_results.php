@@ -20,7 +20,7 @@
 
 $plugin_info = array(
 	'pi_name'        => 'Google Search Results',
-	'pi_version'     => '1.0',
+	'pi_version'     => '1.0.2',
 	'pi_author'      => 'Derek Hogue',
 	'pi_author_url'  => 'http://amphibian.info',
 	'pi_description' => 'Display Google search results in your EE templates using the Google AJAX Search API.',
@@ -161,6 +161,7 @@ class Google_search_results
 						$entry = $TMPL->swap_var_single('url', $this->clean_url($result->unescapedUrl), $entry);
 						$entry = $TMPL->swap_var_single('cached_url', $this->clean_url($result->cacheUrl), $entry);
 						$entry = $TMPL->swap_var_single('excerpt', $result->content, $entry);
+						$entry = $TMPL->swap_var_single('excerpt_plain', strip_tags($result->content), $entry);
 						$entry = $TMPL->swap_var_single('count', $conds['count'], $entry);
 						$entries_list .= $entry;
 						$conds['count']++;
@@ -244,7 +245,7 @@ class Google_search_results
    
 	function base_url()
 	{
-		global $IN, $TMPL;
+		global $FNS, $TMPL;
 		
 		// Compatibility mode for PHP as CGI with .htaccess rules that use RewriteRule ^(.*)$ /index.php?/$1
 		// (Necessitates removal of the query indicator in the URL.)
@@ -253,11 +254,11 @@ class Google_search_results
 		
 		if($TMPL->fetch_param('remove_query_indicator') == 'y')
 		{
-			return preg_replace('/&[.]*$/', '', $IN->URI) . '&amp;';
+			return preg_replace('/&[.]*$/', '', $FNS->fetch_current_uri()) . '&amp;';
 		}
 		else
 		{
-			return preg_replace('/\?[.]*$/', '', $IN->URI) . '?';
+			return preg_replace('/\?[.]*$/', '', $FNS->fetch_current_uri()) . '?';
 		}	
 	}
 	
@@ -295,6 +296,7 @@ VARIABLES:
 {title} -- the page title of the search result
 {url} -- the URL of the search result
 {excerpt} -- Google's excerpt from the search result, with keywords emphasized
+{excerpt_plain} -- Google's excerpt from the search result, without keywords emphasized
 {cached_url} --  link to Google's cached copy of the search result
 
 You can also use both {count} and {total_page_results} tags within the loop, as variables or conditionals.
