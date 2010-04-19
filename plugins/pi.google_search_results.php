@@ -20,7 +20,11 @@
 
 $plugin_info = array(
 	'pi_name'        => 'Google Search Results',
+<<<<<<< HEAD
 	'pi_version'     => '1.0.2',
+=======
+	'pi_version'     => '1.0.1',
+>>>>>>> b6c83d833e7c74756eb9292de9cadc191fedac1e
 	'pi_author'      => 'Derek Hogue',
 	'pi_author_url'  => 'http://amphibian.info',
 	'pi_description' => 'Display Google search results in your EE templates using the Google AJAX Search API.',
