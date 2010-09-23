@@ -20,7 +20,7 @@
 
 $plugin_info = array(
 	'pi_name'        => 'Google Search Results',
-	'pi_version'     => '1.0.2',
+	'pi_version'     => '1.0.3',
 	'pi_author'      => 'Derek Hogue',
 	'pi_author_url'  => 'http://amphibian.info',
 	'pi_description' => 'Display Google search results in your EE templates using the Google AJAX Search API.',
@@ -117,25 +117,14 @@ class Google_search_results
 			if(function_exists('json_decode'))
 			{
 				$json = json_decode($results);
-				
+								
 				$conds = array();
-				
-				// Estimated total results indexed by Google
-				$conds['total_google_search_results'] = $json->responseData->cursor->estimatedResultCount;
-				
-				// Total search results we're able to display for this search via the API (can't be more than 64)
-				$conds['results_overflow'] = ($conds['total_google_search_results'] > 64) ? TRUE : FALSE;
-				
-				// If we have more than 64 results indexed, declare only 64 results for this search
-				$conds['total_search_results'] = ($conds['results_overflow'] == TRUE) ? 64 : $conds['total_google_search_results'];
-				
-				// Total number of pages for this search
-				$conds['total_pages'] = count($json->responseData->cursor->pages);
-				
+
 				// Total results for this specific page of results
 				$conds['total_page_results'] = count($json->responseData->results);
-				
-				$entries_list = '';
+
+				// Initialize entries_list and pagination vars
+				$entries_list = $pagination = '';				
 				
 				if($conds['total_page_results'] == 0)
 				{
@@ -144,7 +133,19 @@ class Google_search_results
 				else
 				{
 					$conds['search_results'] = TRUE;
+
+					// Estimated total results indexed by Google
+					$conds['total_google_search_results'] = $json->responseData->cursor->estimatedResultCount;
 					
+					// Total search results we're able to display for this search via the API (can't be more than 64)
+					$conds['results_overflow'] = ($conds['total_google_search_results'] > 64) ? TRUE : FALSE;
+					
+					// If we have more than 64 results indexed, declare only 64 results for this search
+					$conds['total_search_results'] = ($conds['results_overflow'] == TRUE) ? 64 : $conds['total_google_search_results'];
+					
+					// Total number of pages for this search
+					$conds['total_pages'] = count($json->responseData->cursor->pages);
+										
 					// {results} loop
 					
 					// Are we removing some of the title attribute
@@ -168,7 +169,6 @@ class Google_search_results
 					}
 					
 					// Build pagination
-					$pagination = '';
 					if($conds['total_pages'] > 1)
 					{
 						$conds['paginate'] = TRUE;
@@ -205,10 +205,13 @@ class Google_search_results
 				$tagdata = $FNS->prep_conditionals($TMPL->tagdata, $conds);
 				$tagdata = $TMPL->swap_var_single('keywords', $format->light_xhtml_typography(stripslashes($terms)) , $tagdata);
 				$tagdata = $TMPL->swap_var_single('total_page_results', $conds['total_page_results'] , $tagdata);
-				$tagdata = $TMPL->swap_var_single('total_search_results', $conds['total_search_results'] , $tagdata);
-				$tagdata = $TMPL->swap_var_single('total_pages', $conds['total_pages'], $tagdata);
+				if(isset($conds['total_search_results']))
+					$tagdata = $TMPL->swap_var_single('total_search_results', $conds['total_search_results'] , $tagdata);
+				if(isset($conds['total_pages']))
+					$tagdata = $TMPL->swap_var_single('total_pages', $conds['total_pages'], $tagdata);
 				$tagdata = $TMPL->swap_var_single('page_number', $page, $tagdata);
-				$tagdata = $TMPL->swap_var_single('total_google_search_results', $conds['total_google_search_results'] , $tagdata);
+				if(isset($conds['total_google_search_results']))
+					$tagdata = $TMPL->swap_var_single('total_google_search_results', $conds['total_google_search_results'] , $tagdata);
 				$tagdata = $TMPL->swap_var_single('google_results_url', $this->clean_url($json->responseData->cursor->moreResultsUrl), $tagdata);
 				$tagdata = $TMPL->swap_var_single('pagination', $pagination, $tagdata);
 				$tagdata = preg_replace("/".LD.preg_quote('results').RD.".*?".LD.SLASH.'results'.RD."/s", $entries_list, $tagdata);
@@ -297,7 +300,7 @@ VARIABLES:
 {url} -- the URL of the search result
 {excerpt} -- Google's excerpt from the search result, with keywords emphasized
 {excerpt_plain} -- Google's excerpt from the search result, without keywords emphasized
-{cached_url} --  link to Google's cached copy of the search result
+{cached_url} -- link to Google's cached copy of the search result
 
 You can also use both {count} and {total_page_results} tags within the loop, as variables or conditionals.
 
